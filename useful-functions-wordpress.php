@@ -413,4 +413,24 @@ class Get_Latest_Tweets {
 
 add_shortcode( 'get_latest_tweets', array( 'Get_Latest_Tweets', 'show' ) );
 
+
+/**
+ * Create shortcode to get WordPress menu in HTML format.
+ * How to use? [sm_wp_menu name="Main Menu"]
+ *
+ * @param array $atts Array of attributes.
+ *
+ * @return string HTML menu.
+ */
+function sm_wp_menu_shortcode( $atts ) {
+    $menu = shortcode_atts( array(
+        'name' => null,
+    ), $atts );
+
+    return wp_nav_menu( array(
+        'menu' => $menu['name'],
+        'echo' => false,
+    ) );
+}
+add_shortcode( 'sm_wp_menu', 'sm_wp_menu_shortcode' );
 ?>
