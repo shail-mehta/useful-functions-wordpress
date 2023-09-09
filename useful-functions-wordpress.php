@@ -480,4 +480,48 @@ function sm_fix_svg_thumb_display($response, $attachment) {
 }
 add_filter('wp_prepare_attachment_for_js', 'sm_fix_svg_thumb_display', 10, 3);
 
+
+/* WooCommerce Sale Ending Countdown On Loop */
+
+add_action( 'woocommerce_after_shop_loop_item_title', 'sm_show_countdown_timer_on_loop', 15 );
+
+function sm_show_countdown_timer_on_loop() {
+    global $product;
+    // Get the sales price 'to' date
+    $sales_price_to  = date( "M j, Y", get_post_meta( $product->id, '_sale_price_dates_to', true )); 
+
+    if ( $product->is_on_sale() && $sales_price_to != "" ) {
+            echo 'Sales ends in:<br>
+            <p id="timer"></p>
+            <script>
+            // Set the date we are counting down to (sale price to date)
+            var countDownDate = new Date("'.$sales_price_to.'").getTime();
+
+            // Update the countdown every 1 second
+            var x = setInterval(function() {
+
+            // Get the date and time for today
+            var now = new Date().getTime();
+
+            // Find the distance between now and the countdown date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes, and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Output the result in an element with id="timer"
+            document.getElementById("timer").innerHTML = days + " days, " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds ";
+
+            // If the countdown is over, write text msg
+            if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("timer").innerHTML = "SALE ENDED";
+            }}, 1000);
+            </script>';
+         }
+    };
+
 ?>
