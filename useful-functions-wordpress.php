@@ -433,4 +433,31 @@ function sm_wp_menu_shortcode( $atts ) {
     ) );
 }
 add_shortcode( 'sm_wp_menu', 'sm_wp_menu_shortcode' );
+
+<?php 
+
+/* Redirect users to the checkout page when they add a product to cart on the single product page */
+
+add_filter( 'woocommerce_add_to_cart_redirect', 'sm_add_to_cart_checkout_redirect' );
+
+function sm_add_to_cart_checkout_redirect() {
+   return wc_get_checkout_url();
+}
+
+/* Customise the price range display of variable products with text */ 
+
+add_filter( 'woocommerce_get_price_html', 'sm_change_variable_price_range_display', 10, 2 );
+
+function sm_change_variable_price_range_display( $price, $product ) {
+        if( ! $product->is_type('variable') ) return $price;
+        $prices = $product->get_variation_prices( true );
+
+        if ( empty( $prices['price'] ) )
+        return apply_filters( 'woocommerce_variable_empty_price_html', '', $product );
+
+        $min_price = current( $prices['price'] );
+        $max_price = end( $prices['price'] );
+
+        return apply_filters( 'woocommerce_variable_price_html', 'From ' . wc_price( $min_price ) . $product->get_price_suffix() . " to " . $max_price, $product );
+}
 ?>
