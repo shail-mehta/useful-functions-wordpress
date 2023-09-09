@@ -460,4 +460,24 @@ function sm_change_variable_price_range_display( $price, $product ) {
 
         return apply_filters( 'woocommerce_variable_price_html', 'From ' . wc_price( $min_price ) . $product->get_price_suffix() . " to " . $max_price, $product );
 }
+
+// Enable SVG support in WordPress Media Uploader
+function sm_allow_svg_upload($mimes) {
+    $mimes['svg'] = 'image/svg+xml';
+    $mimes['svgz'] = 'image/svg+xml';
+    return $mimes;
+}
+add_filter('upload_mimes', 'sm_allow_svg_upload');
+
+// Allow SVG files in WordPress when using the Media Library
+function sm_fix_svg_thumb_display($response, $attachment) {
+    if ($response['mime'] === 'image/svg+xml') {
+        $upload_dir = wp_upload_dir();
+        $svg_url = $upload_dir['baseurl'] . '/' . $attachment['file'];
+        $response['image'] = $svg_url;
+    }
+    return $response;
+}
+add_filter('wp_prepare_attachment_for_js', 'sm_fix_svg_thumb_display', 10, 3);
+
 ?>
